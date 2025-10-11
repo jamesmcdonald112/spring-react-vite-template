@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "./components/ui/button";
 
 export default function App() {
   const [message, setMessage] = useState("Connecting to backend...");
@@ -14,6 +15,7 @@ export default function App() {
     <main className="flex flex-col items-center justify-center min-h-screen p-4 text-gray-800 bg-gray-50">
       <h1 className="mb-4 text-3xl font-bold">React + Vite + Tailwind Template</h1>
       <p>{message}</p>
+      <Button>Click Here</Button>
     </main>
   );
 }
