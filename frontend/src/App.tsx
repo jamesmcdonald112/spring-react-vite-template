@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "./components/ui/button";
+import { Button } from "./components/ui/Button";
 
 export default function App() {
   const [message, setMessage] = useState("Connecting to backend...");
