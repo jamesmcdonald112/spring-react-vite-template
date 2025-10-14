@@ -7,7 +7,9 @@ spring:
 
 ---
 
-# DEV (Local H2)
+# =============================
+# 🔧 DEV (Local H2)
+# =============================
 spring:
   config:
     activate:
@@ -37,7 +39,9 @@ server:
 
 ---
 
-# PROD (Docker PostgreSQL)
+# =============================
+# 🚀 PROD (Docker PostgreSQL)
+# =============================
 spring:
   config:
     activate:
@@ -59,3 +63,41 @@ spring:
 
 server:
   port: 8080
+
+---
+
+# =============================
+# ⚙️ ACTUATOR CONFIG
+# =============================
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include:
+          - health
+          - info
+
+  endpoint:
+    health:
+      show-details: always       # Show detailed info like DB status, disk space, etc.
+      show-components: always    # Display each component (db, diskSpace, etc.)
+      probes:
+        enabled: true            # Enables /actuator/health/liveness and /readiness
+    info:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: "${version:0.0.1-SNAPSHOT}"
+    description: "Spring React Vite Template backend"
+
+  build:
+    artifact: ${project.artifactId:backend}
+    time: ${build.time:unknown}
+
+  git:
+    commit:
+      id: ${git.commit.id.abbrev:unknown}
+    branch: ${git.branch:unknown}

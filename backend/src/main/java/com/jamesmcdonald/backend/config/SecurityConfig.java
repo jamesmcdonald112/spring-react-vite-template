@@ -11,12 +11,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // disable CSRF for dev
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // allow all requests
+                        .requestMatchers("/actuator/**").permitAll() // ✅ explicitly allow actuator
+                        .anyRequest().permitAll()
                 )
-                .formLogin(form -> form.disable()) // disable login page
-                .httpBasic(basic -> basic.disable()); // disable basic auth
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable());
         return http.build();
     }
 }
