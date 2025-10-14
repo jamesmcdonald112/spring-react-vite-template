@@ -12,6 +12,13 @@ export default function Home() {
     },
   });
 
+  // ✅ Detect if backend didn’t respond properly (returns HTML instead of text)
+  if (data?.startsWith("<!")) {
+    console.warn(
+      "⚠️ Received HTML instead of JSON/text from backend. Check VITE_API_BASE_URL or the dev proxy."
+    );
+  }
+
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 text-gray-800 bg-gray-50">
       <h1 className="mb-4 text-3xl font-bold">React + Spring Boot Template</h1>
@@ -19,7 +26,7 @@ export default function Home() {
       {/* Display states */}
       {isLoading && <p>Connecting to backend...</p>}
       {error && <p className="text-red-500">Error: {(error as Error).message}</p>}
-      {data && <p>{data}</p>}
+      {data && !data.startsWith("<!") && <p>{data}</p>}
 
       <Button>Click Here</Button>
     </main>
