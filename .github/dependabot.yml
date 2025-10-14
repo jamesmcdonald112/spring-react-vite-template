@@ -13,9 +13,23 @@ updates:
     labels:
       - "dependencies"
       - "frontend"
+    reviewers:
+      - "jamesmcdonald112"
+    open-pull-requests-limit: 5
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+        labels:
+          - "dependencies"
+          - "minor-update"
+      major:
+        update-types: ["major"]
+        labels:
+          - "dependencies"
+          - "⚠️ major-update"
+    ignore:
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   # ⚙️ Backend — Gradle dependencies
   - package-ecosystem: "gradle"
@@ -30,6 +44,17 @@ updates:
     labels:
       - "dependencies"
       - "backend"
+    reviewers:
+      - "jamesmcdonald112"
+    open-pull-requests-limit: 5
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+        labels:
+          - "dependencies"
+          - "minor-update"
+      major:
+        update-types: ["major"]
+        labels:
+          - "dependencies"
+          - "⚠️ major-update"
