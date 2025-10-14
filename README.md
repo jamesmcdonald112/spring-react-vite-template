@@ -93,6 +93,29 @@ Make sure you have the following installed:
 
 ---
 
+## ⚙️ Environment Setup
+
+Before running the backend or frontend for the first time, make sure `.env` files exist.
+
+You can do this automatically with:
+
+```bash
+sh setup.sh
+```
+
+This script copies the example files and prepares local environment variables.
+
+If you prefer to do it manually:
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
+
+💡 Tip: Without these files, frontend requests like /api/ping may fail or return HTML instead of JSON.
+---
+
+
 ## 🧱 Backend (Spring Boot)
 
 ```bash  
@@ -237,13 +260,21 @@ This project is licensed under the **MIT License** — see the [LICENSE](./LICEN
 ## ✅ Next Steps (for new projects)
 
 When reusing this template:
-1. Update project name in `package.json`, `settings.gradle`, and `README.md`.
-2. Change database credentials in `backend/.env.example`.
-3. Replace `VITE_API_URL` in `frontend/.env.example` with your backend’s URL.
-4. Remove or rename the sample `User` entity and related controller/service.
-5. Update Docker image names and container names in `docker-compose.yml`.
-6. Run `docker compose up --build` to verify everything works.
-7. Customize branding, UI, and endpoints for your new project.
+
+1. Update project name in `package.json`, `settings.gradle`, and `README.md`.  
+2. Change database credentials in `backend/.env.example`.  
+3. Replace `VITE_API_URL` in `frontend/.env.example` with your backend’s URL.  
+4. Remove or rename the sample `User` entity and related controller/service.  
+5. Update Docker image names and container names in `docker-compose.yml`.  
+6. Run `docker compose up --build` to verify everything works.  
+7. Customize branding, UI, and endpoints for your new project.  
+8. Run the setup script to initialize `.env` files:  
+
+```bash
+sh setup.sh
+```
+
+This automatically copies `.env.example` → `.env` for both backend and frontend.
 
 ---
 
