@@ -1,6 +1,6 @@
 # 🧱 Spring React Vite Template
 
-[![CI](https://github.com/your-username/spring-react-vite-template/actions/workflows/test.yml/badge.svg)](https://github.com/your-username/spring-react-vite-template/actions/workflows/test.yml)
+[![CI](https://github.com/jamesmcdonald112/spring-react-vite-template/actions/workflows/test.yml/badge.svg)](https://github.com/jamesmcdonald112/spring-react-vite-template/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Coverage](https://img.shields.io/badge/Coverage-example-lightgrey.svg)](#) <!-- Placeholder until Codecov is added -->
 
