@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-coverage-report
-          path: backend/build/reports/jacoco/test/html
+          path: build/reports/jacoco/test/html
 
       # 🧮 Compute coverage percentage
       - name: Compute coverage %
@@ -80,7 +80,7 @@ jobs:
         run: |
           python - <<'PY'
           import xml.etree.ElementTree as ET, os
-          t = ET.parse('backend/build/reports/jacoco/test/jacocoTestReport.xml').getroot()
+          t = ET.parse('build/reports/jacoco/test/jacocoTestReport.xml').getroot()
           covered = missed = 0
           for c in t.iter('counter'):
               if c.get('type') == 'INSTRUCTION':
