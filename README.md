@@ -90,6 +90,61 @@ graph TD
 
 ---
 
+## 🧩 Project Naming & Container Prefix Setup
+
+Before running your new project for the first time, update the default names so your containers, builds, and Gradle settings are consistent.
+
+### 1️⃣ Rename your project
+
+Update these files:
+	- settings.gradle →
+rootProject.name = "readability-analyser"
+	- frontend/package.json →
+"name": "readability-analyser"
+	- README.md →
+Update the title and any project references.
+	- GitHub repository →
+Rename it to match (e.g. readability-analyser).
+
+
+### 2️⃣ Set your Docker Compose project name
+
+In your .env file, define a unique prefix for your container names:
+```bash
+COMPOSE_PROJECT_NAME=your-project-name
+```
+This ensures containers are isolated, e.g.:
+	•	readability-analyser-backend
+	•	readability-analyser-db
+
+To rename for a different project later, just update the variable:
+```bash
+COMPOSE_PROJECT_NAME=my-next-app
+docker compose down -v
+docker compose up --build
+```
+
+### 3️⃣ Verify your setup
+
+Run:
+```bash
+docker ps
+```
+
+You should see containers like:
+```bash
+readability-analyser-backend
+readability-analyser-db
+```
+
+If not, ensure your .env is correctly loaded and you’ve rebuilt with:
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+---
+
 ## ⚙️ Environment Setup
 
 Before running anything, create `.env` files.
@@ -163,6 +218,65 @@ App → http://localhost:5173
 
 ---
 
+## 🪪 Frontend Title & Metadata (Browser Tab Setup)
+
+If your browser tab still shows the old project name (like “Pomodoro”), update the following:
+
+### 1️⃣ index.html (in frontend/)
+
+Open frontend/index.html and update the <title> and meta tags:
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Readability Analyser App" />
+    <title>Readability Analyser</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+This sets the tab title and description when the app loads.
+
+### 2️⃣ Dynamic Title (Optional)
+
+If you want React to control the page title dynamically (for routes or pages), use:
+```javascript
+import { useEffect } from "react";
+
+function Dashboard() {
+  useEffect(() => {
+    document.title = "Dashboard | Readability Analyser";
+  }, []);
+  
+  return <h1>Welcome to your Dashboard</h1>;
+}
+```
+You can later automate this for all pages using React Helmet or a custom <PageTitle /> component.
+
+### 3️⃣ Optional: Vite Config Branding
+
+In vite.config.ts, you can also change the app name for dev server messages or PWA configs:
+```ts
+export default defineConfig({
+  plugins: [react()],
+  define: {
+    __APP_NAME__: JSON.stringify("Readability Analyser"),
+  },
+});
+```
+
+This is purely cosmetic but helps maintain consistency if you print your app name anywhere in logs or metadata.
+
+---
+
 ## 🐳 Docker
 
 **Full Stack (backend + PostgreSQL):**
@@ -231,6 +345,108 @@ docker compose up --build
 ```
 ---
 
+## 🧩 Project Name and Docker Container Prefix
+
+Docker Compose uses the COMPOSE_PROJECT_NAME variable to name containers and volumes.
+This keeps environments isolated and prevents conflicts between different projects using the same service names.
+
+Set your project name in .env like this:
+
+```bash
+COMPOSE_PROJECT_NAME=readability-analyser
+```
+
+If you rename your project later, update this value to match:
+```bash
+COMPOSE_PROJECT_NAME=my-new-app
+```
+
+Then rebuild your stack to apply the new names:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+> 💡 Tip: Run docker ps to verify the new container names,
+e.g. my-new-app-backend and my-new-app-db.
+
+---
+
+## 🧹 Docker Cleanup & Rebuild Commands (for Troubleshooting)
+
+If you encounter container name conflicts, port issues, or database mismatches between projects, use these cleanup commands.
+
+Remove existing containers (if names conflict):
+
+```bash
+docker rm -f spring-backend
+docker rm -f postgres-db
+```
+
+Optional full cleanup (recommended after template updates):
+
+```bash
+docker compose down -v
+docker system prune -af
+```
+
+Rebuild backend and database:
+
+```bash
+docker compose up --build backend
+```
+
+> 💡 Tip: These commands are safe to run — they only remove stopped containers and unused images. Useful whenever you switch between multiple full-stack projects or refresh your Docker setup.
+
+---
+
+## ⚠️ Docker Container Name Conflicts (Troubleshooting)
+
+Sometimes you’ll see an error like this when rebuilding:
+
+```
+Error response from daemon: Conflict. The container name "/postgres-db" is already in use.
+You have to remove (or rename) that container to be able to reuse that name.
+```
+
+This happens when:
+	•	You’ve run another project using the same container names (spring-backend, postgres-db)
+	•	Docker didn’t fully remove the old containers or volumes
+
+✅ Fix the conflict
+
+Remove the old containers:
+```bash
+docker rm -f spring-backend
+docker rm -f postgres-db
+```
+
+Then rebuild cleanly:
+```bash
+docker compose up --build
+```
+
+### 🧩 Prevent conflicts with COMPOSE_PROJECT_NAME
+
+By default, Docker Compose names containers based on the COMPOSE_PROJECT_NAME variable in your .env file.
+Always set this to your current project name before running docker compose up:
+
+```bash
+COMPOSE_PROJECT_NAME=your-project-name
+```
+
+If you clone this template for another app, change the name to avoid reusing the same containers:
+```bash
+COMPOSE_PROJECT_NAME=my-next-app
+docker compose down -v
+docker compose up --build
+```
+
+> 💡 Tip: This keeps projects fully isolated — no overlapping containers or ports, even when running multiple stacks
+
+---
+
 ## ⚙️ Environment Variables
 
 ### Root `.env.example`
@@ -269,6 +485,82 @@ POSTGRES_USER=admin
 POSTGRES_PASSWORD=password
 POSTGRES_DB=appdb
 ```
+
+---
+
+⚙️ Environment Variable Notes (COMPOSE_PROJECT_NAME and Supabase Warnings)
+
+Docker Compose automatically loads variables from your .env file at the project root.
+This includes keys like COMPOSE_PROJECT_NAME, SPRING_PROFILES_ACTIVE, and any SUPABASE_* credentials.
+
+If these are missing, you might see warnings like:
+
+```
+WARN[0000] The "SUPABASE_PASSWORD" variable is not set. Defaulting to a blank string.
+```
+
+These warnings are harmless — they simply mean you haven’t filled in your Supabase credentials.
+However, to silence them, add empty placeholders in your .env:
+
+```bash
+SUPABASE_JDBC_URL=""
+SUPABASE_USERNAME=""
+SUPABASE_PASSWORD=""
+```
+
+> 💡 Tip: The COMPOSE_PROJECT_NAME variable also comes from your .env. You can change it anytime to isolate containers for a new project:
+
+```bash 
+COMPOSE_PROJECT_NAME=my-other-project
+docker compose up --build
+```
+
+---
+
+## 🧪 Quick Integration Test (API ↔ Frontend Connection)
+
+Once your backend and frontend are both running, you can verify they communicate correctly.
+
+### 1️⃣ Test the backend API directly
+
+Run this in your terminal:
+```bash
+curl http://localhost:8080/api/ping
+```
+
+Expected response:
+```json
+{"message": "pong"}
+```
+
+If you see "pong", your backend is running correctly 🎯
+
+### 2️⃣ Test from the browser console
+
+In your browser’s DevTools Console (e.g., Chrome → right-click → Inspect → Console tab):
+```javascript
+fetch('http://localhost:8080/api/ping')
+  .then(res => res.json())
+  .then(console.log)
+```
+
+Expected log:
+```json
+{ message: "pong" }
+```
+
+If you get a SyntaxError: Unexpected token 'p' —
+it means your ping endpoint returns a plain string like "pong" instead of JSON.
+To fix this, your controller should look like:
+
+```java
+@GetMapping("/ping")
+public Map<String, String> ping() {
+    return Map.of("message", "pong");
+}
+```
+
+> 💡 Tip: Once this test passes, your backend and frontend integration is confirmed. You can safely proceed with adding your first real API routes and frontend components.
 
 ---
 
@@ -384,61 +676,99 @@ spring-react-vite-template/
 
 ## ✅ Template Checklist
 
-Before reusing this template for a new project, follow these steps:
-
-1. **Rename your project**
-   - Update names in `settings.gradle`, `package.json`, and `README.md`.
-
-2. **Set the active Spring profile**
-   - In `.env`, choose one:
-     ```bash
-     SPRING_PROFILES_ACTIVE=dev     # Local H2 (default)
-     SPRING_PROFILES_ACTIVE=supabase  # Hosted Supabase PostgreSQL
-     SPRING_PROFILES_ACTIVE=prod    # Dockerized PostgreSQL
-     ```
-
-3. **For Supabase users**
-   - Fill in your Supabase credentials:
-     ```bash
-     SUPABASE_JDBC_URL=jdbc:postgresql://<REGION>-<REF>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
-     SUPABASE_USERNAME=your_supabase_username
-     SUPABASE_PASSWORD=your_supabase_password
-     ```
-   - Then run only the backend:
-     ```bash
-     docker compose up --build backend
-     ```
-
-4. **For Docker/PostgreSQL users**
-   - Use the default database credentials in `.env` or customize:
-     ```bash
-     POSTGRES_USER=admin
-     POSTGRES_PASSWORD=password
-     POSTGRES_DB=appdb
-     ```
-   - Run the full stack:
-     ```bash
-     docker compose up --build
-     ```
-
-5. **For local dev (H2 mode)**
-   - Simply run:
-     ```bash
-     ./gradlew bootRun
-     ```
-
-6. **Check backend health**
-   ```bash
-   curl http://localhost:8080/actuator/health
-   ```
-7. Update frontend API URL
-  - In frontend/.env:
-    ```bash
-    VITE_API_URL=http://localhost:8080/api
+Before reusing this template for a new project, follow these steps carefully to ensure everything builds and deploys correctly.
+	1.	Rename your project
+Update all project names to match your new app:
+	- settings.gradle →
+    ```groovy
+    rootProject.name = "your-project-name"
     ```
-8. Customise your project
-  - Replace sample entities and controllers
-  - Adjust UI components, branding, and endpoints as needed
+  - frontend/package.json →
+    ```json
+    "name": "your-project-name"
+    ```
+  - README.md → Update the title, examples, and any references to spring-react-vite-template
+  - GitHub repository → Rename it to match (e.g. readability-analyser)
+
+2.Set your Docker project prefix
+  In your root .env file, add or update this line:
+  ```bash
+  COMPOSE_PROJECT_NAME=your-project-name
+  ```
+  This ensures your containers are uniquely named (e.g. your-project-name-backend).
+  Rebuild to apply:
+  ```bash
+docker compose down -v
+docker compose up --build
+```
+
+3.	Select your active Spring profile
+In .env, choose which database environment you want:
+```bash
+SPRING_PROFILES_ACTIVE=dev        # Local H2 (default)
+SPRING_PROFILES_ACTIVE=supabase   # Hosted Supabase PostgreSQL
+SPRING_PROFILES_ACTIVE=prod       # Dockerized PostgreSQL
+```
+
+4.	For Supabase users
+Fill in your database credentials:
+```bash
+SUPABASE_JDBC_URL=jdbc:postgresql://<REGION>-<REF>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
+SUPABASE_USERNAME=your_supabase_username
+SUPABASE_PASSWORD=your_supabase_password
+```
+
+Then run only the backend:
+```bash
+docker compose up --build backend
+```
+
+5.	For Docker/PostgreSQL users
+Use or adjust the default database values in .env:
+```bash
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=password
+POSTGRES_DB=appdb
+```
+
+Run the full stack:
+```bash
+docker compose up --build
+```
+
+6.	For local dev (H2 mode)
+No Docker needed — just run:
+```
+./gradlew bootRun
+```
+
+7.	Verify backend health
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+8.	Update frontend API URL
+In frontend/.env, make sure:
+```bash
+VITE_API_URL=http://localhost:8080/api
+```
+
+9.	Customise your project
+  - Replace example entities, controllers, and UI components
+  - Adjust branding, endpoints, and Docker names
+  - Update any references in .env.example
+
+> 💡 Tip:
+If you ever get container name conflicts, re-run:
+```bash
+docker rm -f spring-backend postgres-db
+docker compose down -v
+docker system prune -af
+docker compose up --build
+```
+
+
+---
 
 ## 📜 License
 
