@@ -2,12 +2,11 @@
 
 [![CI](https://github.com/jamesmcdonald112/spring-react-vite-template/actions/workflows/test.yml/badge.svg)](https://github.com/jamesmcdonald112/spring-react-vite-template/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
-[![Coverage](https://img.shields.io/badge/Coverage-example-lightgrey.svg)](#) <!-- Placeholder until Codecov is added -->
+[![Coverage](https://img.shields.io/badge/Coverage-example-lightgrey.svg)](#)
 
-
-A modern **full-stack starter template** combining **Spring Boot + React + Vite + Docker + CI/CD**.  
+A modern **full-stack starter template** combining **Spring Boot + React + Vite +  + CI/CD**.  
 Built for rapid prototyping and real-world deployment, with batteries included:  
-✅ type-safe frontend, ✅ production-ready backend, ✅ local + Docker setup, ✅ GitHub Actions CI.
+✅ type-safe frontend, ✅ production-ready backend, ✅ local +  setup, ✅ GitHub Actions CI.
 
 ---
 
@@ -20,7 +19,7 @@ It’s designed for **developer experience, testability, and maintainability**.
 |-------|-------------|------------|
 | **Frontend** | React (Vite, TypeScript, TailwindCSS, shadcn/ui) | Hooks-based, fast reload, typed API calls |
 | **Backend** | Spring Boot 3 (Java 21, JPA, Actuator, OpenAPI) | RESTful, structured logging, validation |
-| **Database** | PostgreSQL (Docker Compose) | Works with local + CI environments |
+| **Database** | PostgreSQL ( Compose or Supabase) | Works with local + hosted databases |
 | **CI/CD** | GitHub Actions | Build, test, and coverage reporting |
 | **Docs** | Swagger / OpenAPI | Auto-generated REST documentation |
 
@@ -30,12 +29,12 @@ It’s designed for **developer experience, testability, and maintainability**.
 
 You can include a screenshot, animated GIF, or live demo link here.
 
-Example:
-
 ![App Screenshot](./frontend/public/screenshot.png)
 
 > 💡 Tip: Store demo images in `/frontend/public` so Vite serves them easily.
-> You can also embed a Loom or YouTube video if you have one.
+> You can also embed a Loom or YouTube video if you have one, for example:
+> - Demo video: https://www.loom.com/share/your-demo-id
+> - Live preview: https://your-demo-url.example.com
 
 ---
 
@@ -44,9 +43,9 @@ Example:
 ```mermaid
 graph TD
   A[Frontend: React + Vite] -->|REST API calls| B[Backend: Spring Boot]
-  B -->|JPA/Hibernate| C[(PostgreSQL DB)]
+  B -->|JPA/Hibernate| C[(PostgreSQL / Supabase)]
   B --> D[Swagger UI / Actuator Endpoints]
-  A --> E[Docker Compose Network]
+  A --> E[ Compose Network]
   B --> E
 ```
 
@@ -72,8 +71,8 @@ graph TD
 - 🧾 **Structured JSON logging** — production-ready logging via Logback + Logstash  
 
 ### 🐳 DevOps & Tooling
-- 🧩 **Docker Compose** — runs backend + PostgreSQL seamlessly  
-- 🧱 **Multi-stage Dockerfile** — optimized build for backend JAR  
+- 🧩 ** Compose** — runs backend + PostgreSQL seamlessly  
+- 🧱 **Multi-stage file** — optimized build for backend JAR  
 - ⚙️ **GitHub Actions CI** — build, test, coverage report per PR  
 - 🔄 **Dependabot** — weekly dependency updates grouped by type  
 - 🪶 **Husky + lint-staged** — auto-format and lint pre-commit  
@@ -82,200 +81,369 @@ graph TD
 
 ---
 
-## 🧪 Local Development
+## 🛠 Prerequisites
 
-### 🛠 Prerequisites
-Make sure you have the following installed:
-- [Node.js 22+](https://nodejs.org/)
-- [Java 21 (Temurin recommended)](https://adoptium.net/)
-- [Docker & Docker Compose](https://www.docker.com/)
-- [Git](https://git-scm.com/)
+- Node.js 22+
+- Java 21 (Temurin recommended)
+-  & Docker Compose
+- Git
 
 ---
 
 ## ⚙️ Environment Setup
 
-Before running the backend or frontend for the first time, make sure `.env` files exist.
+Before running anything, create `.env` files.
 
-You can do this automatically with:
+**Option 1 — Automatic setup**
 
 ```bash
 sh setup.sh
 ```
 
-This script copies the example files and prepares local environment variables.
-
-If you prefer to do it manually:
+**Option 2 — Manual setup**
 
 ```bash
-cp backend/.env.example backend/.env
+cp .env.example .env
 cp frontend/.env.example frontend/.env
 ```
 
-💡 Tip: Without these files, frontend requests like /api/ping may fail or return HTML instead of JSON.
----
+> The root `.env` controls backend profiles.  
+> Set `SPRING_PROFILES_ACTIVE=dev | supabase | prod`.
 
+---
 
 ## 🧱 Backend (Spring Boot)
 
-```bash  
-cd backend  
-./gradlew bootRun  
+```bash
+cd backend
+./gradlew bootRun
 ```
 
-Access:  
-- API: <http://localhost:8080>  
-- Swagger Docs: <http://localhost:8080/swagger-ui.html>  
-- Health Check: <http://localhost:8080/actuator/health>  
+Access your backend at:
+
+- **API Base URL:** [http://localhost:8080](http://localhost:8080)  
+- **Swagger Docs:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
+- **Health Check:** [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+
+To verify health via terminal:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+> 💡 **Tip:** Without these `.env` files in place, frontend requests like `/api/ping` may fail or return HTML instead of JSON responses.  
+> Always ensure both `backend/.env` and `frontend/.env` exist before running the servers.
+---
+
+## 🌍 Backend Profiles
+
+| Profile | Description | Database | Command |
+|----------|--------------|-----------|----------|
+| `dev` | Local file-based H2 | H2 | `./gradlew bootRun` |
+| `supabase` | Hosted Supabase PostgreSQL | Supabase | `docker compose up --build backend` |
+| `prod` | Dockerized PostgreSQL | Local Docker container | `docker compose up --build` |
+
+**Health check:**
+
+```bash
+curl http://localhost:8080/actuator/health
+```
 
 ---
 
 ## 💻 Frontend (React + Vite)
 
-```bash  
-cd frontend  
-npm install  
-npm run dev  
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-Access:  
-- App: <http://localhost:5173>  
-
-Environment variables are loaded from `.env` — see below for configuration.  
+App → http://localhost:5173  
 
 ---
 
-## 🐳 Full-stack via Docker
+## 🐳 Docker
 
-Run everything (backend + db) with a single command:  
+**Full Stack (backend + PostgreSQL):**
 
-```bash  
-docker compose up --build  
+```bash
+ compose up --build
 ```
 
-This will:  
-- Start a **PostgreSQL** container with persistent named volume  
-- Build and run the **Spring Boot** backend in a production-ready image  
-- Expose the app on `localhost:8080`  
+**Backend Only (for Supabase mode):**
 
-Hot reload is supported for local dev (non-Docker workflow).  
+```bash
+ compose up --build backend
+```
 
+If you get a port error (`Bind for 0.0.0.0:8080 failed`):
+
+```bash
+ ps
+ stop <container_id>
+ compose down -v
+```
+
+---
+
+## 🐳 Docker Tips & Troubleshooting
+
+### 🧩 Backend-Only Mode (for Supabase)
+If you’re using Supabase as your database and don’t want to run the local Docker PostgreSQL container, you can start only the backend service:
+
+```bash
+docker compose up --build backend
+```
+
+This will skip the internal db service and connect directly to your Supabase instance, provided your .env is configured with the correct SUPABASE_* values.
+
+### ⚠️ Common Port Conflict (8080 already in use)
+
+If you see this error:
+```bash
+Bind for 0.0.0.0:8080 failed
+```
+
+It means another container or process is already using port 8080.
+Run the following to identify and stop the conflicting container:
+
+```bash
+docker ps
+docker stop <container_id>
+docker compose down -v
+```
+
+After that, re-run:
+
+```bash
+docker compose up --build
+```
+
+### 🧹 Full Reset
+
+If you want a completely clean build (rebuilding all images and removing old volumes):
+
+```bash
+docker compose down -v
+docker system prune -af
+docker compose up --build
+```
 ---
 
 ## ⚙️ Environment Variables
 
-Each service has its own `.env.example` for reference.
+### Root `.env.example`
 
-### 🧱 Backend (`backend/.env.example`)
-```
+```bash
+# =========================
+# 🌱 ACTIVE SPRING PROFILE
+# =========================
 SPRING_PROFILES_ACTIVE=dev
+
+# =========================
+# 🧱 LOCAL DEV (H2)
+# =========================
+# Uses file-based H2 database (no credentials needed)
+
+# =========================
+# 🟢 SUPABASE (Cloud DB)
+# =========================
+# Build your JDBC URL like:
+#   jdbc:postgresql://<REGION>-<ref>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
+# Found in: Supabase Dashboard → Settings → Database → Connection Info → Transaction Pooler (IPv4)
+
+SUPABASE_JDBC_URL=jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require
+SUPABASE_USERNAME=your_supabase_username
+SUPABASE_PASSWORD=your_supabase_password
+
+# Optional: silence  warnings if not using Supabase
+# SUPABASE_JDBC_URL=""
+# SUPABASE_USERNAME=""
+# SUPABASE_PASSWORD=""
+
+# =========================
+# 🐳 PROD ( PostgreSQL)
+# =========================
 POSTGRES_USER=admin
 POSTGRES_PASSWORD=password
 POSTGRES_DB=appdb
 ```
 
-### 💻 Frontend (`frontend/.env.example`)
-```
-VITE_API_URL=http://localhost:8080/api
+---
+
+## ⚙️ Environment Variables
+
+Each service has its own `.env.example` for reference.  
+The backend `.env` controls which database and profile are active.
+
+---
+
+### 🟢 Supabase Connection Guide
+
+If you’re using Supabase instead of local Postgres, you’ll need to configure three values in your `.env`:
+
+```bash
+SUPABASE_JDBC_URL=jdbc:postgresql://<REGION>-<REF>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
+SUPABASE_USERNAME=your_supabase_username
+SUPABASE_PASSWORD=your_supabase_password
 ```
 
-To use these, copy each example file and rename:
+### 🔍 Where to find these
+
+In your Supabase Dashboard:
+	1.	Dashboard Navbar → Connection Info
+	2.	Copy the Transaction Pooler (IPv4) URL
+	•	Example: 
+    `aws-1-eu-west-1.pooler.supabase.coma`
+  3. Build your JDBC URL like this: 
+    `jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require`
+  4.	Use your Supabase credentials for SUPABASE_USERNAME and SUPABASE_PASSWORD.
+
+> 💡 Always use the ?sslmode=require flag to ensure a secure connection.
+
+### ⚙️ Optional Cleanup
+
+If you’re not using Supabase and want to avoid Docker warnings like:
+
+`The 'SUPABASE_JDBC_URL' variable is not set. Defaulting to a blank string.`
+
+You can safely add these empty lines to your .env:
+
+```
+SUPABASE_JDBC_URL=""
+SUPABASE_USERNAME=""
+SUPABASE_PASSWORD=""
+```
+
+  
+### Frontend `frontend/.env.example`
+
 ```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+VITE_API_URL=http://localhost:8080/api
 ```
 
 ---
 
 ## 🧪 Testing
 
-### 🧩 Frontend
-Run all frontend unit tests:
+### Frontend
+
 ```bash
 cd frontend
 npm test
 ```
 
-### ⚙️ Backend
-Run JUnit + Mockito tests:
+### Backend
+
 ```bash
 cd backend
 ./gradlew test
-```
-
-Generate coverage report (JaCoCo):
-```bash
 ./gradlew jacocoTestReport
 ```
 
-View HTML coverage report:
-```
-backend/build/reports/jacoco/test/html/index.html
-```
+Coverage Report →  
+`backend/build/reports/jacoco/test/html/index.html`
 
 ---
 
 ## 🧰 Continuous Integration (CI)
 
-GitHub Actions automatically run on every **push** and **pull request**:
-- 🧪 Runs frontend & backend tests
-- 📊 Uploads coverage artifacts
-- ✅ Posts coverage % in PR summary
-- 🔁 Dependabot auto-updates dependencies
-- 🪶 Lints and formats code before commits (Husky + lint-staged)
+GitHub Actions run automatically on push and pull requests:
+
+- 🧪 Run frontend & backend tests  
+- 📊 Upload coverage  
+- ✅ Show coverage summary in PRs  
+- 🔁 Dependabot weekly updates  
+- 🪶 Lint & format with Husky + lint-staged  
 
 ---
 
 ## 🧱 Project Structure
 
-```
+```bash
 spring-react-vite-template/
-│
-├── backend/                  # Spring Boot app
-│   ├── src/main/java/...     # Source code (controllers, services, etc.)
-│   ├── src/test/java/...     # JUnit + Mockito tests
-│   ├── build.gradle           # Gradle build config
-│   └── Dockerfile             # Multi-stage backend build
-│
-├── frontend/                 # React + Vite app
-│   ├── src/                  # Components, pages, hooks, etc.
-│   ├── vite.config.ts        # Vite configuration
-│   └── package.json          # Dependencies and scripts
-│
-├── .github/workflows/        # CI/CD pipelines
-├── docker-compose.yml        # Local dev setup
-├── .editorconfig             # Consistent formatting rules
-├── .vscode/extensions.json   # Recommended VS Code extensions
-└── README.md                 # You are here 🚀
+├── backend/
+│   ├── src/main/java/...
+│   ├── src/test/java/...
+│   ├── build.gradle
+│   └── file.backend
+├── frontend/
+│   ├── src/
+│   ├── vite.config.ts
+│   └── package.json
+├── .github/workflows/
+├── -compose.yml
+├── .env.example
+├── .editorconfig
+├── .vscode/extensions.json
+└── README.md
 ```
 
 ---
+
+## ✅ Template Checklist
+
+Before reusing this template for a new project, follow these steps:
+
+1. **Rename your project**
+   - Update names in `settings.gradle`, `package.json`, and `README.md`.
+
+2. **Set the active Spring profile**
+   - In `.env`, choose one:
+     ```bash
+     SPRING_PROFILES_ACTIVE=dev     # Local H2 (default)
+     SPRING_PROFILES_ACTIVE=supabase  # Hosted Supabase PostgreSQL
+     SPRING_PROFILES_ACTIVE=prod    # Dockerized PostgreSQL
+     ```
+
+3. **For Supabase users**
+   - Fill in your Supabase credentials:
+     ```bash
+     SUPABASE_JDBC_URL=jdbc:postgresql://<REGION>-<REF>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
+     SUPABASE_USERNAME=your_supabase_username
+     SUPABASE_PASSWORD=your_supabase_password
+     ```
+   - Then run only the backend:
+     ```bash
+     docker compose up --build backend
+     ```
+
+4. **For Docker/PostgreSQL users**
+   - Use the default database credentials in `.env` or customize:
+     ```bash
+     POSTGRES_USER=admin
+     POSTGRES_PASSWORD=password
+     POSTGRES_DB=appdb
+     ```
+   - Run the full stack:
+     ```bash
+     docker compose up --build
+     ```
+
+5. **For local dev (H2 mode)**
+   - Simply run:
+     ```bash
+     ./gradlew bootRun
+     ```
+
+6. **Check backend health**
+   ```bash
+   curl http://localhost:8080/actuator/health
+   ```
+7. Update frontend API URL
+  - In frontend/.env:
+    ```bash
+    VITE_API_URL=http://localhost:8080/api
+    ```
+8. Customise your project
+  - Replace sample entities and controllers
+  - Adjust UI components, branding, and endpoints as needed
 
 ## 📜 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
+Licensed under the **MIT License** — see [LICENSE](./LICENSE).
 
 ---
 
-## ✅ Next Steps (for new projects)
-
-When reusing this template:
-
-1. Update project name in `package.json`, `settings.gradle`, and `README.md`.  
-2. Change database credentials in `backend/.env.example`.  
-3. Replace `VITE_API_URL` in `frontend/.env.example` with your backend’s URL.  
-4. Remove or rename the sample `User` entity and related controller/service.  
-5. Update Docker image names and container names in `docker-compose.yml`.  
-6. Run `docker compose up --build` to verify everything works.  
-7. Customize branding, UI, and endpoints for your new project.  
-8. Run the setup script to initialize `.env` files:  
-
-```bash
-sh setup.sh
-```
-
-This automatically copies `.env.example` → `.env` for both backend and frontend.
-
----
-
-**Built with ❤️ using React, Spring Boot, Docker, and GitHub Actions.**
+**Built with ❤️ using React, Spring Boot, , and GitHub Actions.**
