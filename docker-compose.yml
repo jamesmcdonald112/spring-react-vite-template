@@ -15,7 +15,7 @@ services:
   # Only used when SPRING_PROFILES_ACTIVE=prod
   db:
     image: postgres:16
-    container_name: postgres-db
+    container_name: ${COMPOSE_PROJECT_NAME}-db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
@@ -38,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile.backend
-    container_name: spring-backend
+    container_name: ${COMPOSE_PROJECT_NAME}-backend
     restart: always
     ports:
       - "8080:8080"

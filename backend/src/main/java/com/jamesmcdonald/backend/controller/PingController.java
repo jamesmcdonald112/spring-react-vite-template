@@ -1,5 +1,7 @@
 package com.jamesmcdonald.backend.controller;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PingController {
 
     @GetMapping("/ping")
-    public String ping() {
-        return "pong";
+    public Map<String, String> ping() {
+        return Map.of("message", "pong");
     }
 }
