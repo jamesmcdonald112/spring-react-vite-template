@@ -20,6 +20,7 @@ class PingControllerTest {
     void shouldReturnPingMessage() throws Exception {
         mockMvc.perform(get("/api/ping"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("pong"));
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.message").value("pong"));
     }
 }
