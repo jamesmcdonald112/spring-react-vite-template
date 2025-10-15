@@ -1,0 +1,18 @@
+# =============================
+# 🧱 STAGE 1 — Build the JAR
+# =============================
+FROM gradle:8.9-jdk21 AS builder
+WORKDIR /home/gradle/app
+COPY --chown=gradle:gradle backend ./backend
+WORKDIR /home/gradle/app/backend
+RUN gradle clean bootJar -x test
+RUN ls -lh build/libs  # verify jar path
+
+# =============================
+# 🚀 STAGE 2 — Run the app
+# =============================
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY --from=builder /home/gradle/app/backend/build/libs/backend.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
