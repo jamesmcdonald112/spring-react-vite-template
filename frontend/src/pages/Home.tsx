@@ -8,7 +8,10 @@ export default function Home() {
     queryFn: async () => {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/ping`);
       if (!res.ok) throw new Error("Failed to fetch ping");
-      return res.text();
+
+      // 🧩 Expect JSON, not text
+      const json = await res.json();
+      return json.message; // → "pong"
     },
   });
 

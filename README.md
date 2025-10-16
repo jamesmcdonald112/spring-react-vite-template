@@ -97,14 +97,16 @@ Before running your new project for the first time, update the default names so 
 ### 1️⃣ Rename your project
 
 Update these files:
-	- settings.gradle →
+- settings.gradle →
 rootProject.name = "readability-analyser"
-	- frontend/package.json →
+- frontend/package.json →
 "name": "readability-analyser"
-	- README.md →
+- README.md →
 Update the title and any project references.
-	- GitHub repository →
+- GitHub repository →
 Rename it to match (e.g. readability-analyser).
+- .env → update COMPOSE_PROJECT_NAME=your-project-name
+This defines your Docker container prefixes.
 
 
 ### 2️⃣ Set your Docker Compose project name
@@ -188,6 +190,9 @@ curl http://localhost:8080/actuator/health
 
 > 💡 **Tip:** Without these `.env` files in place, frontend requests like `/api/ping` may fail or return HTML instead of JSON responses.  
 > Always ensure both `backend/.env` and `frontend/.env` exist before running the servers.
+
+> 💡 Note: The root .env file is used only for local development and Docker Compose. When deploying to Render, ignore the .env file and instead add your variables in Render → Environment → Add Environment Variable. Render automatically injects them into the container. This keeps your secrets secure and prevents credentials from being committed to Git.
+
 ---
 
 ## 🌍 Backend Profiles
@@ -452,38 +457,65 @@ docker compose up --build
 ### Root `.env.example`
 
 ```bash
-# =========================
+# =========================================================
 # 🌱 ACTIVE SPRING PROFILE
-# =========================
+# =========================================================
+# Choose which environment to run:
+#   dev       → Local H2 (default)
+#   supabase  → Hosted PostgreSQL (Supabase)
+#   prod      → Dockerized PostgreSQL
 SPRING_PROFILES_ACTIVE=dev
 
-# =========================
+
+# =========================================================
 # 🧱 LOCAL DEV (H2)
-# =========================
-# Uses file-based H2 database (no credentials needed)
+# =========================================================
+# Uses a file-based H2 database: ./data/devdb
+# No credentials required.
+# For local H2 development, leave all Supabase variables empty ("").
 
-# =========================
+
+# =========================================================
 # 🟢 SUPABASE (Cloud DB)
-# =========================
+# =========================================================
+# For Supabase testing, fill in your credentials manually in .env.
 # Build your JDBC URL like:
-#   jdbc:postgresql://<REGION>-<ref>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
+#   jdbc:postgresql://<REGION>-<REF>.pooler.supabase.com:6543/<DATABASE>?sslmode=require
+#
 # Found in: Supabase Dashboard → Settings → Database → Connection Info → Transaction Pooler (IPv4)
+#
+# Example:
+# SUPABASE_JDBC_URL=jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require
+# SUPABASE_USERNAME=your_supabase_username
+# SUPABASE_PASSWORD=your_supabase_password
+#
+# ✅ Best practice:
+# - Leave these blank ("") for local development (H2)
+# - Fill them in only for Supabase testing
+# - For production (Render), set them ONLY in the Render Environment tab
 
-SUPABASE_JDBC_URL=jdbc:postgresql://aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require
-SUPABASE_USERNAME=your_supabase_username
-SUPABASE_PASSWORD=your_supabase_password
+SUPABASE_JDBC_URL=""
+SUPABASE_USERNAME=""
+SUPABASE_PASSWORD=""
 
-# Optional: silence  warnings if not using Supabase
-# SUPABASE_JDBC_URL=""
-# SUPABASE_USERNAME=""
-# SUPABASE_PASSWORD=""
 
-# =========================
-# 🐳 PROD ( PostgreSQL)
-# =========================
+# =========================================================
+# 🐳 PROD (Docker PostgreSQL)
+# =========================================================
+# Used when running `docker compose up` with SPRING_PROFILES_ACTIVE=prod
+
 POSTGRES_USER=admin
 POSTGRES_PASSWORD=password
 POSTGRES_DB=appdb
+
+
+# =========================================================
+# 🧩 PROJECT IDENTIFIER
+# =========================================================
+# Used by Docker Compose to name your containers.
+# Update this value per project (e.g. readability-analyser, calendar-app, etc.)
+
+COMPOSE_PROJECT_NAME=your-project-name
 ```
 
 ---
